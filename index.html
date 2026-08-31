@@ -3,252 +3,249 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Steady — Leadership Check-in</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #F0EFEA;
-    color: #23261F;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  .wrap { max-width: 480px; width: 100%; }
-  .card-shell {
-    background: #FAFAF6;
-    padding: 28px 22px 32px;
-    border-radius: 14px;
-  }
-  .eyebrow { font-size: 13px; color: #6B6F63; }
-  .vision {
-    font-family: Georgia, "Times New Roman", serif;
-    font-style: italic;
-    font-size: 18px;
-    line-height: 1.45;
-    color: #2E3A2C;
-    margin-top: 6px;
-  }
-  .tabs { display: flex; gap: 8px; margin-top: 20px; }
-  .tab {
-    flex: 1; text-align: center; padding: 8px; border-radius: 8px;
-    font-size: 13px; cursor: pointer; color: #6B6F63; background: #E4E2D8;
-  }
-  .tab.active { background: #3D5A45; color: #FFFFFF; }
-  .streak-row {
-    display: flex; align-items: baseline; gap: 8px;
-    margin-top: 20px; padding-top: 18px; border-top: 1px solid #E4E2D8;
-  }
-  .streak-num { font-size: 28px; font-weight: 500; color: #3D5A45; }
-  .streak-label { font-size: 13px; color: #6B6F63; }
-  .week { display: flex; gap: 6px; margin-top: 14px; }
-  .week .day {
-    flex: 1; height: 28px; border-radius: 4px; background: #E4E2D8;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: #8A8D7F;
-  }
-  .cards { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
-  .pcard {
-    border: 1px solid #E4E2D8; border-radius: 10px; padding: 14px 16px;
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    cursor: pointer; background: #FFFFFF; transition: border-color 0.15s;
-  }
-  .pcard:hover { border-color: #B9C4B4; }
-  .pcard.done { background: #F0F4EE; border-color: #A9BFA3; }
-  .pcard-title { font-size: 15px; font-weight: 500; }
-  .pcard-sub { font-size: 12px; color: #6B6F63; margin-top: 2px; }
-  .check {
-    width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #B9C4B4;
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: #FFFFFF; background: #FFFFFF;
-  }
-  .pcard.done .check { background: #3D5A45; border-color: #3D5A45; }
-  .footer-note { margin-top: 18px; font-size: 12px; color: #8A8D7F; text-align: center; }
+<title>Steady :: Leadership Check-in</title>
 
-  .history { display: none; margin-top: 20px; }
-  .history.active { display: block; }
-  .hist-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-bottom: 1px solid #E4E2D8; font-size: 13px;
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "JetBrains Mono", monospace;
+  background:
+    radial-gradient(circle at top, #0b1220 0%, #020305 70%);
+  color: #00ff9f;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 520px;
+}
+
+.card-shell {
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(5, 10, 15, 0.95);
+
+  border: 1px solid #00ff9f;
+
+  padding: 28px 22px 32px;
+
+  box-shadow:
+    0 0 8px rgba(0,255,159,.8),
+    0 0 20px rgba(0,255,159,.15),
+    inset 0 0 20px rgba(0,255,159,.08);
+}
+
+.card-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  pointer-events: none;
+}
+
+.card-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      rgba(0,255,159,.02),
+      rgba(0,255,159,0)
+    );
+}
+
+.eyebrow {
+  color: #00d8ff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 11px;
+}
+
+.vision {
+  margin-top: 10px;
+  line-height: 1.8;
+  color: #00ff9f;
+  text-shadow: 0 0 8px rgba(0,255,159,.35);
+
+  border-left: 2px solid #00ff9f;
+  padding-left: 12px;
+}
+
+.vision::before {
+  content: "> ";
+  color: #ff43d1;
+}
+
+.cursor-line {
+  margin-top: 12px;
+  color: #ff43d1;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.cursor {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
   }
-  .hist-date { color: #23261F; }
-  .hist-dots { display: flex; gap: 4px; }
-  .hist-dot { width: 9px; height: 9px; border-radius: 50%; background: #E4E2D8; }
-  .hist-dot.on { background: #3D5A45; }
-  .hist-empty { text-align: center; color: #8A8D7F; font-size: 13px; padding: 30px 0; }
-  .legend { display: flex; gap: 14px; margin-top: 14px; font-size: 11px; color: #6B6F63; flex-wrap: wrap; }
-  .legend span { display: flex; align-items: center; gap: 4px; }
-  .legend .dot { width: 8px; height: 8px; border-radius: 50%; }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="card-shell">
-    <div class="eyebrow" id="date-label">Loading...</div>
-    <div class="vision">I read situations early, set a pace others can rely on, and stay steady when everything around me is in motion.</div>
+}
 
-    <div class="tabs">
-      <div class="tab active" id="tab-today">Today</div>
-      <div class="tab" id="tab-history">History</div>
-    </div>
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
 
-    <div id="today-view">
-      <div class="streak-row">
-        <span class="streak-num" id="streak-num">0</span>
-        <span class="streak-label">day streak</span>
-      </div>
-      <div class="week" id="week-strip"></div>
-      <div class="cards" id="cards"></div>
-      <div class="footer-note">Tap a principle when you've genuinely practiced it today.</div>
-    </div>
+.tab {
+  flex: 1;
+  text-align: center;
 
-    <div class="history" id="history-view">
-      <div id="hist-list"></div>
-      <div class="legend">
-        <span><span class="dot" style="background:#3D5A45"></span> Tempo</span>
-        <span><span class="dot" style="background:#3D5A45"></span> Connects</span>
-        <span><span class="dot" style="background:#3D5A45"></span> Quiet intel</span>
-        <span><span class="dot" style="background:#3D5A45"></span> Composure</span>
-      </div>
-    </div>
-  </div>
-</div>
+  padding: 10px;
 
-<script>
-(function() {
-  const PRINCIPLES = [
-    { key: 't', title: 'Tempo control', sub: 'I paced a decision instead of just reacting' },
-    { key: 'c', title: 'Connective range', sub: 'I translated something across a gap' },
-    { key: 'q', title: 'Enablement', sub: 'I setup someone else for success by building on a structure I started' },
-    { key: 'p', title: 'Composure', sub: 'I stayed steady while something shifted' }
-  ];
-  const STORAGE_PREFIX = 'steady_entries_';
+  border: 1px solid #00d8ff;
 
-  function fmtDate(d) {
-    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  }
-  function dayLabel(d) { return d.toLocaleDateString(undefined, { weekday: 'short' })[0]; }
+  background: #071116;
+  color: #00d8ff;
 
-  const today = new Date();
-  const todayKey = fmtDate(today);
-  let entry = { t: false, c: false, q: false, p: false };
+  cursor: pointer;
 
-  function loadEntry(key) {
-    try {
-      const raw = localStorage.getItem(STORAGE_PREFIX + key);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
-  }
-  function saveEntry(key, data) {
-    try {
-      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(data));
-      return true;
-    } catch (e) { return false; }
-  }
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-  document.getElementById('date-label').textContent =
-    today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+.tab.active {
+  background: #00d8ff;
+  color: #071116;
 
-  const existing = loadEntry(todayKey);
-  if (existing) entry = existing;
+  box-shadow:
+    0 0 10px #00d8ff,
+    0 0 18px rgba(0,216,255,.4);
+}
 
-  function renderCards() {
-    const cardsEl = document.getElementById('cards');
-    cardsEl.innerHTML = '';
-    PRINCIPLES.forEach(p => {
-      const done = !!entry[p.key];
-      const card = document.createElement('div');
-      card.className = 'pcard' + (done ? ' done' : '');
-      card.innerHTML = `
-        <div>
-          <div class="pcard-title">${p.title}</div>
-          <div class="pcard-sub">${p.sub}</div>
-        </div>
-        <div class="check">${done ? '✓' : ''}</div>
-      `;
-      card.addEventListener('click', () => {
-        entry[p.key] = !entry[p.key];
-        saveEntry(todayKey, entry);
-        renderCards();
-        buildWeekAndStreak();
-      });
-      cardsEl.appendChild(card);
-    });
-  }
+.streak-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 
-  function buildWeekAndStreak() {
-    const weekEl = document.getElementById('week-strip');
-    weekEl.innerHTML = '';
-    const counts = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const key = fmtDate(d);
-      const e = loadEntry(key);
-      const count = e ? ['t','c','q','p'].filter(k => e[k]).length : 0;
-      counts.push(count);
-      const cell = document.createElement('div');
-      cell.className = 'day';
-      cell.textContent = dayLabel(d);
-      if (count > 0) {
-        const opacity = 0.35 + (count / 4) * 0.65;
-        cell.style.background = `rgba(61, 90, 69, ${opacity})`;
-        cell.style.color = '#FFFFFF';
-      }
-      weekEl.appendChild(cell);
-    }
-    let streak = 0;
-    for (let i = counts.length - 1; i >= 0; i--) {
-      if (counts[i] > 0) streak++; else break;
-    }
-    document.getElementById('streak-num').textContent = streak;
-  }
+  margin-top: 20px;
+  padding-top: 20px;
 
-  function buildHistory() {
-    const listEl = document.getElementById('hist-list');
-    listEl.innerHTML = '';
-    const rows = [];
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const key = fmtDate(d);
-      const e = loadEntry(key);
-      if (e) rows.push({ d, e });
-    }
-    if (rows.length === 0) {
-      listEl.innerHTML = '<div class="hist-empty">No entries yet. Check in on Today to get started.</div>';
-      return;
-    }
-    rows.forEach(({ d, e }) => {
-      const row = document.createElement('div');
-      row.className = 'hist-row';
-      const dots = PRINCIPLES.map(p => `<div class="hist-dot ${e[p.key] ? 'on' : ''}"></div>`).join('');
-      row.innerHTML = `
-        <div class="hist-date">${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
-        <div class="hist-dots">${dots}</div>
-      `;
-      listEl.appendChild(row);
-    });
-  }
+  border-top: 1px solid rgba(0,255,159,.25);
+}
 
-  document.getElementById('tab-today').addEventListener('click', () => {
-    document.getElementById('tab-today').classList.add('active');
-    document.getElementById('tab-history').classList.remove('active');
-    document.getElementById('today-view').style.display = 'block';
-    document.getElementById('history-view').classList.remove('active');
-  });
-  document.getElementById('tab-history').addEventListener('click', () => {
-    document.getElementById('tab-history').classList.add('active');
-    document.getElementById('tab-today').classList.remove('active');
-    document.getElementById('today-view').style.display = 'none';
-    document.getElementById('history-view').classList.add('active');
-    buildHistory();
-  });
+.streak-num {
+  font-size: 38px;
+  font-weight: 700;
+  color: #00ff9f;
 
-  renderCards();
-  buildWeekAndStreak();
-})();
-</script>
-</body>
-</html>
+  text-shadow:
+    0 0 10px #00ff9f;
+}
+
+.streak-label {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #00d8ff;
+}
+
+.week {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.week .day {
+  flex: 1;
+
+  height: 32px;
+
+  border: 1px solid #00d8ff;
+
+  background: #061018;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  color: #00d8ff;
+}
+
+.cards {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pcard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+  padding: 15px;
+
+  border: 1px solid #00ff9f;
+  background: rgba(0,255,159,.04);
+
+  cursor: pointer;
+
+  transition: all .15s ease;
+}
+
+.pcard:hover {
+  transform: translateX(4px);
+
+  box-shadow:
+    0 0 12px rgba(0,255,159,.5);
+}
+
+.pcard.done {
+  background: rgba(0,255,159,.15);
+  border-color: #00ff9f;
+}
+
+.pcard-title {
+  color: #00ff9f;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.pcard-sub {
+  margin-top: 4px;
+  color: #89e6c6;
+  font-size: 12px;
+}
+
+.check {
+  width: 26px;
+  height: 26px;
+
+  flex-shrink: 0;
+
+ 
