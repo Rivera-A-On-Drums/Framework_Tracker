@@ -49,7 +49,8 @@
     padding: 20px 14px 40px;
     min-height: 100vh;
   }
-  .wrap { max-width: 460px; margin: 0 auto; }
+  .wrap {max-width: min(900px, 90vw);
+}
 
   .header { text-align: center; margin-bottom: 18px; }
   .tag {
@@ -61,7 +62,7 @@
   }
   .vision {
     font-family: 'VT323', monospace; letter-spacing: 0.04em;
-    font-size: 15px; font-weight: 500; line-height: 1.6;
+    font-size: clamp(18px, 2.4vw, 28px);
     color: var(--text); margin-top: 14px;
     border-left: 2px solid var(--magenta);
     padding-left: 12px; text-align: left;
@@ -69,7 +70,7 @@
 
   .tabs { display: flex; gap: 2px; margin-top: 20px; border: 1px solid var(--panel-border); }
   .tab {
-    flex: 1; text-align: center; padding: 10px; font-size: 11px;
+    flex: 1; text-align: center; padding: 10px; font-size: clamp(14px, 1.5vw, 18px);
     letter-spacing: 0.15em; color: var(--text-dim); cursor: pointer;
     background: var(--panel);
   }
@@ -84,7 +85,7 @@
     border: 1px solid var(--panel-border); clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   }
   .streak-num {
-    font-family: 'VT323', monospace; letter-spacing: 0.04em; font-size: 32px; font-weight: 900;
+    font-family: 'VT323', monospace; letter-spacing: 0.04em; font-size: clamp(36px, 6vw, 72px);
     color: var(--magenta); text-shadow: 0 0 14px rgba(255,107,53,0.7);
   }
   .streak-label { font-size: 11px; letter-spacing: 0.1em; color: var(--text-dim); }
@@ -110,10 +111,10 @@
   .pcard.done { border-color: var(--cyan); background: rgba(255,176,0,0.06); }
   .pcard.done::before { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
   .pcard-title {
-    font-family: 'VT323', monospace; letter-spacing: 0.04em; font-size: 13px; letter-spacing: 0.06em;
+    font-family: 'VT323', monospace; letter-spacing: 0.04em; font-size: clamp(16px, 2vw, 24px);
     color: var(--text); text-transform: uppercase;
   }
-  .pcard-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .pcard-sub { font-size: clamp(14px, 1.5vw, 18px); color: var(--text-dim); margin-top: 4px; }
   .check {
     width: 22px; height: 22px; border: 1px solid var(--text-dim);
     flex-shrink: 0; display: flex; align-items: center; justify-content: center;
