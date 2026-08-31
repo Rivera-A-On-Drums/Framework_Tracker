@@ -49,7 +49,9 @@
     padding: 20px 14px 40px;
     min-height: 100vh;
   }
-  .wrap {max-width: min(900px, 90vw);
+  .wrap {width: min(1100px, 95vw);
+3
+margin: 0 auto;);
 }
 
   .header { text-align: center; margin-bottom: 18px; }
@@ -182,10 +184,10 @@
 <script>
 (function() {
   const PRINCIPLES = [
-    { key: 't', title: 'Tempo Control', sub: 'Paced a decision instead of just reacting' },
-    { key: 'c', title: 'Connective Range', sub: 'Translated something across a gap' },
-    { key: 'q', title: 'Quiet Intelligence', sub: 'Did unseen work that mattered' },
-    { key: 'p', title: 'Composure', sub: 'Stayed steady while something shifted' }
+    { key: 't', title: 'Tempo', sub: 'Did you help something move at the right speed?' },
+    { key: 'c', title: 'Connectivity', sub: 'Did you translate something across a gap?' },
+    { key: 'q', title: 'Enablement', sub: 'What did I do today that helped someone else succed?' },
+    { key: 'p', title: 'Composure', sub: 'Did you stay steady while something shifted' }
   ];
   const STORAGE_PREFIX = 'steady_entries_';
 
@@ -284,7 +286,7 @@
       if (e) rows.push({ d, e });
     }
     if (rows.length === 0) {
-      listEl.innerHTML = '<div class="hist-empty">NO ENTRIES YET. CHECK IN ON TODAY TO BEGIN THE LOG.</div>';
+      listEl.innerHTML = '<div class="hist-empty">NO ENTRIES YET. CHECK IN TODAY TO BEGIN THE LOG.</div>';
       return;
     }
     rows.forEach(({ d, e }) => {
