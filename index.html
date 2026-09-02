@@ -231,6 +231,46 @@
     letter-spacing: 0.08em; opacity: 0.6;
   }
   .sound-toggle:hover { opacity: 1; color: var(--cyan); }
+
+  .settings-toggle {
+    position: fixed; bottom: 16px; left: 16px;
+    font-size: 12px; color: var(--text-dim); cursor: pointer;
+    letter-spacing: 0.08em; opacity: 0.6;
+  }
+  .settings-toggle:hover { opacity: 1; color: var(--cyan); }
+
+  .settings-panel {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel); border: 1px solid var(--panel-border);
+    padding: 24px; width: min(90vw, 380px); z-index: 100;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  }
+  .settings-title {
+    font-size: 20px; color: var(--cyan); letter-spacing: 0.15em;
+    margin-bottom: 20px; text-align: center;
+  }
+  .settings-panel label {
+    display: block; font-size: 13px; color: var(--text-dim);
+    letter-spacing: 0.1em; margin-bottom: 6px; margin-top: 14px;
+  }
+  .settings-panel input {
+    width: 100%; background: var(--bg); border: 1px solid var(--panel-border);
+    color: var(--text); font-family: 'VT323', monospace; font-size: 16px;
+    padding: 10px 12px; outline: none;
+  }
+  .settings-panel input:focus { border-color: var(--cyan); }
+  .settings-buttons { display: flex; gap: 10px; margin-top: 22px; }
+  .settings-buttons button {
+    flex: 1; background: var(--panel); border: 1px solid var(--panel-border);
+    color: var(--text-dim); font-family: 'VT323', monospace; font-size: 16px;
+    padding: 10px; cursor: pointer; letter-spacing: 0.1em;
+  }
+  .settings-buttons button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .settings-status {
+    margin-top: 14px; font-size: 13px; color: var(--text-dim);
+    text-align: center; min-height: 18px;
+  }
 </style>
 </head>
 <body>
@@ -281,6 +321,25 @@
 </div>
 
 <div class="sound-toggle" id="sound-toggle">SOUND: ON</div>
+<div class="settings-toggle" id="settings-toggle">SETTINGS</div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-panel" id="settings-panel" hidden>
+  <div class="settings-title">// SETTINGS</div>
+
+  <label>GIST ID</label>
+  <input type="text" id="input-gist-id" placeholder="paste gist id here" spellcheck="false">
+
+  <label>TOKEN</label>
+  <input type="password" id="input-gist-token" placeholder="paste token here" spellcheck="false">
+
+  <div class="settings-buttons">
+    <button id="btn-save-settings">SAVE</button>
+    <button id="btn-close-settings">CLOSE</button>
+  </div>
+
+  <div class="settings-status" id="settings-status"></div>
+</div>
 
 <script>
 (function() {
@@ -291,9 +350,11 @@
     { key: 'p', title: 'Composure/', sub: 'Did you stay steady while something shifted?' }
   ];
   const STORAGE_PREFIX = 'steady_entries_';
+  let GIST_ID = localStorage.getItem('steady_gist_id') || '';
+  let GIST_TOKEN = localStorage.getItem('steady_gist_token') || '';
   let soundEnabled = true;
 
-  // Simple terminal click sound using Web Audio
+  // Sound
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playClick() {
     if (!soundEnabled) return;
@@ -308,7 +369,6 @@
     osc.start();
     osc.stop(audioCtx.currentTime + 0.08);
   }
-
   function playLock() {
     if (!soundEnabled) return;
     const osc = audioCtx.createOscillator();
@@ -346,12 +406,75 @@
     } catch (e) { return false; }
   }
 
+  // ===== GIST FUNCTIONS =====
+  async function loadFromGist() {
+    if (!GIST_ID || !GIST_TOKEN) return null;
+    try {
+      const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        headers: {
+          'Authorization': `token ${GIST_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (!res.ok) throw new Error('Failed to load Gist');
+      const data = await res.json();
+      const file = data.files['steady-log.json'];
+      if (!file) return {};
+      return JSON.parse(file.content);
+    } catch (err) {
+      console.error('Gist load error:', err);
+      return null;
+    }
+  }
+
+  async function saveToGist(allData) {
+    if (!GIST_ID || !GIST_TOKEN) return false;
+    try {
+      const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `token ${GIST_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: {
+            'steady-log.json': {
+              content: JSON.stringify(allData, null, 2)
+            }
+          }
+        })
+      });
+      return res.ok;
+    } catch (err) {
+      console.error('Gist save error:', err);
+      return false;
+    }
+  }
+
+  async function syncToGist() {
+    if (!GIST_ID || !GIST_TOKEN) return;
+    const allData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(STORAGE_PREFIX)) {
+        const dateKey = key.replace(STORAGE_PREFIX, '');
+        try {
+          allData[dateKey] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {}
+      }
+    }
+    await saveToGist(allData);
+  }
+
+  // Date label
   document.getElementById('date-label').textContent =
     today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
   const cursorSpan = document.createElement('span');
   cursorSpan.className = 'cursor';
   document.getElementById('date-label').appendChild(cursorSpan);
 
+  // Load today's entry
   const existing = loadEntry(todayKey);
   if (existing) entry = existing;
 
@@ -381,13 +504,9 @@
     const checked = PRINCIPLES.filter(p => entry[p.key]).length;
     document.getElementById('system-status').textContent = `// STATUS: ${checked} OF ${total}`;
     document.getElementById('progress-fill').style.width = `${(checked / total) * 100}%`;
-
     const cardsEl = document.getElementById('cards');
-    if (checked === total) {
-      cardsEl.classList.add('all-complete');
-    } else {
-      cardsEl.classList.remove('all-complete');
-    }
+    if (checked === total) cardsEl.classList.add('all-complete');
+    else cardsEl.classList.remove('all-complete');
   }
 
   function checkDayLocked() {
@@ -421,6 +540,7 @@
       card.addEventListener('click', () => {
         entry[p.key] = !entry[p.key];
         saveEntry(todayKey, entry);
+        syncToGist();
         if (entry[p.key]) {
           playClick();
           card.classList.remove('pulse');
@@ -500,7 +620,6 @@
     const currentStreak = document.getElementById('streak-num').textContent;
     statsEl.textContent = `LONGEST ${longest} · CURRENT ${currentStreak}`;
 
-    // Weekly review (last 7 days)
     let weekText = '// WEEKLY SCAN<br>';
     if (daysLogged === 0) {
       weekText += 'No data yet.';
@@ -517,7 +636,7 @@
       return;
     }
 
-    rows.forEach(({ d, e, key }) => {
+    rows.forEach(({ d, e }) => {
       const row = document.createElement('div');
       row.className = 'hist-row';
       const dots = PRINCIPLES.map(p => `<div class="hist-dot ${e[p.key] ? 'on' : ''}"></div>`).join('');
@@ -557,6 +676,37 @@
   document.getElementById('sound-toggle').addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+  });
+
+  // ===== SETTINGS =====
+  const settingsPanel = document.getElementById('settings-panel');
+  const settingsToggle = document.getElementById('settings-toggle');
+  const inputGistId = document.getElementById('input-gist-id');
+  const inputGistToken = document.getElementById('input-gist-token');
+  const btnSaveSettings = document.getElementById('btn-save-settings');
+  const btnCloseSettings = document.getElementById('btn-close-settings');
+  const settingsStatus = document.getElementById('settings-status');
+
+  settingsToggle.addEventListener('click', () => {
+    inputGistId.value = localStorage.getItem('steady_gist_id') || '';
+    inputGistToken.value = localStorage.getItem('steady_gist_token') || '';
+    settingsStatus.textContent = '';
+    settingsPanel.hidden = false;
+  });
+
+  btnCloseSettings.addEventListener('click', () => {
+    settingsPanel.hidden = true;
+  });
+
+  btnSaveSettings.addEventListener('click', () => {
+    const id = inputGistId.value.trim();
+    const token = inputGistToken.value.trim();
+    localStorage.setItem('steady_gist_id', id);
+    localStorage.setItem('steady_gist_token', token);
+    GIST_ID = id;
+    GIST_TOKEN = token;
+    settingsStatus.textContent = 'SAVED';
+    setTimeout(() => { settingsPanel.hidden = true; }, 800);
   });
 
   // Init
