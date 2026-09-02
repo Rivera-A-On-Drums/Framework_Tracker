@@ -76,6 +76,7 @@
     display: flex;
     justify-content: center;
     padding: clamp(16px, 3vw, 40px);
+    padding-bottom: 80px;
   }
 
   .wrap { width: min(1000px, 95vw); margin: 0 auto; }
@@ -86,7 +87,7 @@
 
   .vision {
     font-family: 'VT323', monospace; letter-spacing: 0.04em;
-    font-size: clamp(24px, 2.5vw, 42px); line-height: 1.4;
+    font-size: clamp(22px, 2.5vw, 42px); line-height: 1.4;
     color: var(--text); margin-top: 14px;
     border-left: 2px solid var(--magenta); padding-left: 12px;
     text-align: left; min-height: 3.2em;
@@ -131,7 +132,7 @@
   .week { display: flex; gap: 5px; margin-top: 4px; }
   .week .day {
     flex: 1; height: 30px; display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: var(--text-dim); background: var(--panel);
+    font-size: 11px; color: var(--text-dim); background: var(--panel);
     border: 1px solid var(--panel-border);
   }
   .week .day.lit { border-color: var(--cyan); color: #05070A; font-weight: bold; }
@@ -158,9 +159,9 @@
 
   .pcard-title {
     font-family: 'VT323', monospace; letter-spacing: 0.04em;
-    font-size: clamp(24px, 2vw, 34px); color: var(--text); text-transform: uppercase;
+    font-size: clamp(22px, 2vw, 34px); color: var(--text); text-transform: uppercase;
   }
-  .pcard-sub { font-size: clamp(16px, 1.3vw, 22px); color: var(--text-dim); margin-top: 4px; }
+  .pcard-sub { font-size: clamp(15px, 1.3vw, 22px); color: var(--text-dim); margin-top: 4px; }
 
   .check {
     width: 34px; height: 34px; border: 1px solid var(--text-dim); flex-shrink: 0;
@@ -179,8 +180,14 @@
   .day-locked div { margin-top: 6px; font-size: 0.85em; opacity: 0.8; letter-spacing: 0.1em; }
 
   .footer-note {
-    margin-top: 24px; font-size: clamp(14px, 1vw, 18px); color: var(--cyan);
-    text-align: center; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75;
+    margin-top: 28px;
+    margin-bottom: 20px;
+    font-size: clamp(13px, 1vw, 18px);
+    color: var(--cyan);
+    text-align: center;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
   }
 
   .history { display: none; margin-top: 20px; }
@@ -225,19 +232,28 @@
   .legend span { display: flex; align-items: center; gap: 4px; }
   .legend .dot { width: 7px; height: 7px; background: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
 
-  .sound-toggle {
-    position: fixed; bottom: 16px; right: 16px;
-    font-size: 12px; color: var(--text-dim); cursor: pointer;
-    letter-spacing: 0.08em; opacity: 0.6;
-  }
-  .sound-toggle:hover { opacity: 1; color: var(--cyan); }
-
+  .sound-toggle,
   .settings-toggle {
-    position: fixed; bottom: 16px; left: 16px;
-    font-size: 12px; color: var(--text-dim); cursor: pointer;
-    letter-spacing: 0.08em; opacity: 0.6;
+    position: fixed;
+    bottom: 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+    background: rgba(10, 6, 3, 0.9);
+    padding: 7px 12px;
+    border: 1px solid var(--panel-border);
+    z-index: 50;
   }
-  .settings-toggle:hover { opacity: 1; color: var(--cyan); }
+  .sound-toggle { right: 16px; }
+  .settings-toggle { left: 16px; }
+  .sound-toggle:hover,
+  .settings-toggle:hover {
+    opacity: 1;
+    color: var(--cyan);
+    border-color: var(--cyan);
+  }
 
   .settings-panel {
     position: fixed; top: 50%; left: 50%;
@@ -270,6 +286,29 @@
   .settings-status {
     margin-top: 14px; font-size: 13px; color: var(--text-dim);
     text-align: center; min-height: 18px;
+  }
+
+  /* Mobile refinements */
+  @media (max-width: 480px) {
+    body {
+      padding: 12px 12px 90px;
+    }
+    .vision {
+      font-size: 20px;
+    }
+    .pcard {
+      padding: 12px 14px;
+    }
+    .pcard-title {
+      font-size: 20px;
+    }
+    .pcard-sub {
+      font-size: 14px;
+    }
+    .footer-note {
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
   }
 </style>
 </head>
@@ -354,7 +393,6 @@
   let GIST_TOKEN = localStorage.getItem('steady_gist_token') || '';
   let soundEnabled = true;
 
-  // Sound
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playClick() {
     if (!soundEnabled) return;
@@ -406,7 +444,6 @@
     } catch (e) { return false; }
   }
 
-  // ===== GIST FUNCTIONS =====
   async function loadFromGist() {
     if (!GIST_ID || !GIST_TOKEN) return null;
     try {
@@ -467,14 +504,12 @@
     await saveToGist(allData);
   }
 
-  // Date label
   document.getElementById('date-label').textContent =
     today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
   const cursorSpan = document.createElement('span');
   cursorSpan.className = 'cursor';
   document.getElementById('date-label').appendChild(cursorSpan);
 
-  // Load today's entry
   const existing = loadEntry(todayKey);
   if (existing) entry = existing;
 
@@ -618,7 +653,7 @@
     }
 
     const currentStreak = document.getElementById('streak-num').textContent;
-    statsEl.textContent = `LONGEST ${longest} · CURRENT ${currentStreak}`;
+    statsEl.textContent = `LONGEST ${longest}  ·  CURRENT ${currentStreak}`;
 
     let weekText = '// WEEKLY SCAN<br>';
     if (daysLogged === 0) {
@@ -657,7 +692,6 @@
     });
   }
 
-  // Tabs
   document.getElementById('tab-today').addEventListener('click', () => {
     document.getElementById('tab-today').classList.add('active');
     document.getElementById('tab-history').classList.remove('active');
@@ -672,13 +706,12 @@
     buildHistory();
   });
 
-  // Sound toggle
   document.getElementById('sound-toggle').addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
   });
 
-  // ===== SETTINGS =====
+  // Settings
   const settingsPanel = document.getElementById('settings-panel');
   const settingsToggle = document.getElementById('settings-toggle');
   const inputGistId = document.getElementById('input-gist-id');
