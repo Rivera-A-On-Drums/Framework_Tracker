@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="Manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#FFB000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -747,12 +747,13 @@
     settingsStatus.textContent = 'SAVED';
     setTimeout(() => { settingsPanel.hidden = true; }, 800);
   });
-
-  // Init
+// Init
   renderCards();
   buildWeekAndStreak();
   typeVision();
 })();
+</script>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
@@ -762,3 +763,4 @@
 </script>
 </body>
 </html>
+  
