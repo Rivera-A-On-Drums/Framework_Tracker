@@ -365,12 +365,12 @@
   </div>
 </div>
 
-<div class="sound-toggle" id="sound-toggle">SOUND: ON</div>
+<div class="sound-toggle" id="sound-toggle">SOUND: OFF</div>
 <div class="settings-toggle" id="settings-toggle">SETTINGS</div>
 
 <!-- BACKGROUND MUSIC -->
 <audio id="bgMusic" loop>
-  <source src="audio_theme.mp3" type="audio/mpeg">
+  <source src="assets/audio/theme.mp3" type="audio/mpeg">
 </audio>
 
 <!-- SETTINGS PANEL -->
@@ -722,13 +722,14 @@
   bgMusic.volume = 0.35;
 
   document.getElementById('sound-toggle').addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
-    document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
-    if (soundEnabled) {
+    if (bgMusic.paused) {
       bgMusic.play().catch(() => {});
+      soundEnabled = true;
     } else {
       bgMusic.pause();
+      soundEnabled = false;
     }
+    document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
   });
 
   // Settings
