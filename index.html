@@ -368,6 +368,11 @@
 <div class="sound-toggle" id="sound-toggle">SOUND: ON</div>
 <div class="settings-toggle" id="settings-toggle">SETTINGS</div>
 
+<!-- BACKGROUND MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="assets/audio/theme.mp3" type="audio/mpeg">
+</audio>
+
 <!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settings-panel" hidden>
   <div class="settings-title">// SETTINGS</div>
@@ -429,7 +434,7 @@
 
   function fmtDate(d) {
     const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
-    return `\( {y}- \){m}-${day}`;
+    return `${y}-${m}-${day}`;
   }
   function dayLabel(d) { return d.toLocaleDateString(undefined, { weekday: 'short' })[0]; }
 
@@ -712,9 +717,18 @@
     buildHistory();
   });
 
+  // SOUND TOGGLE + BACKGROUND MUSIC
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = 0.35;
+
   document.getElementById('sound-toggle').addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+    if (soundEnabled) {
+      bgMusic.play().catch(() => {});
+    } else {
+      bgMusic.pause();
+    }
   });
 
   // Settings
@@ -763,4 +777,3 @@
 </script>
 </body>
 </html>
-  
