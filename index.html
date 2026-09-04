@@ -525,25 +525,29 @@
   if (existing) entry = existing;
 
   function typeVision() {
-    const el = document.querySelector('.vision');
-    if (!el) return;
-    const fullText = el.textContent.trim();
-    el.textContent = '';
-    const cursor = document.createElement('span');
-    cursor.className = 'typing-cursor';
-    el.appendChild(cursor);
-    let i = 0;
-    function type() {
-      if (i < fullText.length) {
-        el.insertBefore(document.createTextNode(fullText[i]), cursor);
-        i++;
-        setTimeout(type, 100);
-      } else {
-        setTimeout(() => cursor.remove(), 1600);
-      }
+  const el = document.querySelector('.vision');
+  if (!el) return;
+  const fullText = el.textContent.trim();
+  el.textContent = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  el.appendChild(cursor);
+  let i = 0;
+  function type() {
+    if (i < fullText.length) {
+      const char = fullText[i];
+      el.insertBefore(document.createTextNode(char), cursor);
+      i++;
+      // Longer pause after sentence-ending punctuation
+      const isSentenceEnd = /[.!?]/.test(char);
+      const delay = isSentenceEnd ? 400 : 70;
+      setTimeout(type, delay);
+    } else {
+      setTimeout(() => cursor.remove(), 1600);
     }
-    type();
   }
+  type();
+}
 
   function updateSystemStatus() {
     const total = PRINCIPLES.length;
