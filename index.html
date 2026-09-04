@@ -537,7 +537,7 @@
       if (i < fullText.length) {
         el.insertBefore(document.createTextNode(fullText[i]), cursor);
         i++;
-        setTimeout(type, 36);
+        setTimeout(type, 100);
       } else {
         setTimeout(() => cursor.remove(), 1600);
       }
