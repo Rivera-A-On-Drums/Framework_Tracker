@@ -525,29 +525,36 @@
   if (existing) entry = existing;
 
   function typeVision() {
-  const el = document.querySelector('.vision');
-  if (!el) return;
-  const fullText = el.textContent.trim();
-  el.textContent = '';
-  const cursor = document.createElement('span');
-  cursor.className = 'typing-cursor';
-  el.appendChild(cursor);
-  let i = 0;
-  function type() {
-    if (i < fullText.length) {
-      const char = fullText[i];
-      el.insertBefore(document.createTextNode(char), cursor);
-      i++;
-      // Longer pause after sentence-ending punctuation
-      const isSentenceEnd = /[.!?]/.test(char);
-      const delay = isSentenceEnd ? 400 : 70;
-      setTimeout(type, delay);
-    } else {
-      setTimeout(() => cursor.remove(), 1600);
+    const el = document.querySelector('.vision');
+    if (!el) return;
+    const fullText = el.textContent.trim();
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    let i = 0;
+
+    function type() {
+      if (i < fullText.length) {
+        const char = fullText[i];
+        el.insertBefore(document.createTextNode(char), cursor);
+        i++;
+        const isSentenceEnd = /[.!?]/.test(char);
+        const delay = isSentenceEnd ? 300 : 70;
+        setTimeout(type, delay);
+      } else {
+        // pause on the finished text, then erase and restart
+        setTimeout(() => {
+          el.textContent = '';
+          el.appendChild(cursor);
+          i = 0;
+          type();
+        }, 3000); // how long the full sentence sits before retyping
+      }
     }
+
+    el.textContent = '';
+    el.appendChild(cursor);
+    type();
   }
-  type();
-}
 
   function updateSystemStatus() {
     const total = PRINCIPLES.length;
