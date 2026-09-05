@@ -102,13 +102,13 @@
   .boot-overlay {
     position: fixed; inset: 0; z-index: 200;
     background: var(--bg);
-    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
-    padding: clamp(24px, 6vw, 60px); gap: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: clamp(24px, 6vw, 60px); gap: 10px; text-align: center;
     transition: opacity 0.8s ease;
   }
   .boot-overlay.hidden { opacity: 0; pointer-events: none; }
   .boot-line {
-    font-family: 'VT323', monospace; letter-spacing: 0.03em; white-space: pre;
+    font-family: 'VT323', monospace; letter-spacing: 0.03em; white-space: normal;
     font-size: clamp(15px, 2vw, 22px); color: var(--text-dim);
     opacity: 0; transform: translateY(4px);
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -346,10 +346,10 @@
 </head>
 <body>
 <div class="boot-overlay" id="boot-overlay">
-  <div class="boot-line" id="boot-line-0">TEMPO/       reads early, moves right</div>
-  <div class="boot-line" id="boot-line-1">BRIDGE/      connects what's disconnected</div>
-  <div class="boot-line" id="boot-line-2">ENABLE/      makes others faster</div>
-  <div class="boot-line" id="boot-line-3">COMPOSURE/   holds the signal, drops the noise</div>
+  <div class="boot-line" id="boot-line-0">TEMPO/ reads early, moves right</div>
+  <div class="boot-line" id="boot-line-1">BRIDGE/ connects what's disconnected</div>
+  <div class="boot-line" id="boot-line-2">ENABLE/ makes others faster</div>
+  <div class="boot-line" id="boot-line-3">COMPOSURE/ holds the signal, drops the noise</div>
   <div class="boot-status" id="boot-status" hidden>// STEADY ONLINE</div>
   <div class="boot-tap" id="boot-tap">TAP TO INITIATE</div>
 </div>
