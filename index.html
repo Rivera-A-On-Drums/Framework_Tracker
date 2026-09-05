@@ -93,10 +93,36 @@
 
   .vision {
     font-family: 'VT323', monospace; letter-spacing: 0.04em;
-    font-size: clamp(22px, 2.5vw, 42px); line-height: 1.4;
+    font-size: clamp(16px, 1.9vw, 26px); line-height: 1.5;
     color: var(--text); margin-top: 14px;
     border-left: 2px solid var(--magenta); padding-left: 12px;
-    text-align: left; min-height: 3.2em;
+    text-align: left; min-height: 2.4em;
+  }
+
+  .boot-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    padding: clamp(24px, 6vw, 60px); gap: 10px;
+    transition: opacity 0.8s ease;
+  }
+  .boot-overlay.hidden { opacity: 0; pointer-events: none; }
+  .boot-line {
+    font-family: 'VT323', monospace; letter-spacing: 0.03em; white-space: pre;
+    font-size: clamp(15px, 2vw, 22px); color: var(--text-dim);
+    opacity: 0; transform: translateY(4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .boot-line.show { opacity: 1; transform: translateY(0); color: var(--text); }
+  .boot-status {
+    margin-top: 14px; font-size: clamp(15px, 2vw, 20px); color: var(--cyan);
+    letter-spacing: 0.15em; text-shadow: 0 0 8px rgba(255,176,0,0.5);
+  }
+  .boot-tap {
+    margin-top: 26px; padding: 12px 22px; border: 1px solid var(--cyan);
+    color: var(--cyan); cursor: pointer; letter-spacing: 0.15em;
+    font-family: 'VT323', monospace; font-size: clamp(14px, 1.6vw, 18px);
+    animation: cursorblink 1.4s steps(1) infinite;
   }
 
   .tabs { display: flex; gap: 2px; margin-top: 20px; border: 1px solid var(--panel-border); }
@@ -300,7 +326,7 @@
       padding: 12px 12px 90px;
     }
     .vision {
-      font-size: 20px;
+      font-size: 15px;
     }
     .pcard {
       padding: 12px 14px;
@@ -319,11 +345,20 @@
 </style>
 </head>
 <body>
+<div class="boot-overlay" id="boot-overlay">
+  <div class="boot-line" id="boot-line-0">TEMPO/       reads early, moves right</div>
+  <div class="boot-line" id="boot-line-1">BRIDGE/      connects what's disconnected</div>
+  <div class="boot-line" id="boot-line-2">ENABLE/      makes others faster</div>
+  <div class="boot-line" id="boot-line-3">COMPOSURE/   holds the signal, drops the noise</div>
+  <div class="boot-status" id="boot-status" hidden>// STEADY ONLINE</div>
+  <div class="boot-tap" id="boot-tap">TAP TO INITIATE</div>
+</div>
+
 <div class="wrap">
   <div class="header">
     <div class="tag">// SYSTEM_LOG</div>
     <div class="date" id="date-label">LOADING...</div>
-    <div class="vision">Find the tempo. Calm the storm. Bridge the Gap. Enable the future.</div>
+    <div class="vision">Keep tempo. Bridge the gap. Enable the future. Hold the line: composure.</div>
   </div>
 
   <div class="tabs">
@@ -407,29 +442,53 @@
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playClick() {
     if (!soundEnabled) return;
+    const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
+    const filter = audioCtx.createBiquadFilter();
     const gain = audioCtx.createGain();
-    osc.connect(gain);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(620, now);
+    osc.frequency.exponentialRampToValueAtTime(480, now + 0.09);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1400, now);
+    filter.Q.value = 0.7;
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.frequency.value = 800;
-    osc.type = 'square';
-    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.08);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.09, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
   }
   function playLock() {
     if (!soundEnabled) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.frequency.value = 420;
-    osc.type = 'triangle';
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.25);
+    const now = audioCtx.currentTime;
+    const freqs = [300, 450];
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1200, now);
+    filter.Q.value = 0.6;
+    filter.connect(audioCtx.destination);
+
+    freqs.forEach((f) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now);
+      osc.connect(gain);
+      gain.connect(filter);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      osc.start(now);
+      osc.stop(now + 0.48);
+    });
   }
 
   function fmtDate(d) {
@@ -531,7 +590,6 @@
     const cursor = document.createElement('span');
     cursor.className = 'typing-cursor';
     let i = 0;
-
     function type() {
       if (i < fullText.length) {
         const char = fullText[i];
@@ -541,16 +599,14 @@
         const delay = isSentenceEnd ? 300 : 70;
         setTimeout(type, delay);
       } else {
-        // pause on the finished text, then erase and restart
         setTimeout(() => {
           el.textContent = '';
           el.appendChild(cursor);
           i = 0;
           type();
-        }, 3000); // how long the full sentence sits before retyping
+        }, 3000);
       }
     }
-
     el.textContent = '';
     el.appendChild(cursor);
     type();
@@ -566,15 +622,40 @@
     else cardsEl.classList.remove('all-complete');
   }
 
+  let dayLockRitualDone = false;
+
+  function runClosingRitual() {
+    const el = document.getElementById('day-locked');
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add('visible'));
+
+    el.innerHTML = '// COMPILING DAY...';
+    playLock();
+
+    setTimeout(() => {
+      const names = PRINCIPLES.map(p => p.title.replace('/', '')).join(' \u2713&nbsp;&nbsp; ') + ' \u2713';
+      el.innerHTML = names;
+      playClick();
+    }, 1000);
+
+    setTimeout(() => {
+      const streak = document.getElementById('streak-num').textContent;
+      el.innerHTML = `STREAK: ${streak}<div>// STEADY MAINTAINED</div>`;
+      playLock();
+    }, 2200);
+  }
+
   function checkDayLocked() {
     const total = PRINCIPLES.length;
     const checked = PRINCIPLES.filter(p => entry[p.key]).length;
     const el = document.getElementById('day-locked');
     if (checked === total && total > 0) {
-      el.hidden = false;
-      requestAnimationFrame(() => el.classList.add('visible'));
-      playLock();
+      if (!dayLockRitualDone) {
+        dayLockRitualDone = true;
+        runClosingRitual();
+      }
     } else {
+      dayLockRitualDone = false;
       el.classList.remove('visible');
       setTimeout(() => { el.hidden = true; }, 700);
     }
@@ -592,7 +673,7 @@
           <div class="pcard-title">${p.title}</div>
           <div class="pcard-sub">${p.sub}</div>
         </div>
-        <div class="check">${done ? '✓' : ''}</div>
+        <div class="check">${done ? '\u2713' : ''}</div>
       `;
       card.addEventListener('click', () => {
         entry[p.key] = !entry[p.key];
@@ -675,7 +756,7 @@
     }
 
     const currentStreak = document.getElementById('streak-num').textContent;
-    statsEl.textContent = `LONGEST ${longest}  ·  CURRENT ${currentStreak}`;
+    statsEl.textContent = `LONGEST ${longest}  \u00b7  CURRENT ${currentStreak}`;
 
     let weekText = '// WEEKLY SCAN<br>';
     if (daysLogged === 0) {
@@ -702,7 +783,7 @@
         <div class="hist-dots">${dots}</div>
       `;
       row.addEventListener('click', () => {
-        const checked = PRINCIPLES.filter(p => e[p.key]).map(p => p.title.replace('/', '')).join(' · ');
+        const checked = PRINCIPLES.filter(p => e[p.key]).map(p => p.title.replace('/', '')).join(' \u00b7 ');
         const allDone = PRINCIPLES.every(p => e[p.key]);
         detailEl.innerHTML = `
           <strong>${d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase()}</strong><br>
@@ -741,6 +822,39 @@
       soundEnabled = false;
     }
     document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+  });
+
+  // BOOT SEQUENCE
+  const bootOverlay = document.getElementById('boot-overlay');
+  const bootTap = document.getElementById('boot-tap');
+  const bootStatus = document.getElementById('boot-status');
+  const bootLines = [0, 1, 2, 3].map(i => document.getElementById('boot-line-' + i));
+
+  bootTap.addEventListener('click', () => {
+    bootTap.style.display = 'none';
+
+    bgMusic.play().catch(() => {});
+    soundEnabled = true;
+    document.getElementById('sound-toggle').textContent = 'SOUND: ON';
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    let delay = 500;
+    bootLines.forEach((line) => {
+      setTimeout(() => {
+        line.classList.add('show');
+        playClick();
+      }, delay);
+      delay += 1000;
+    });
+
+    setTimeout(() => {
+      bootStatus.hidden = false;
+      playLock();
+    }, delay + 600);
+
+    setTimeout(() => {
+      bootOverlay.classList.add('hidden');
+    }, delay + 2600);
   });
 
   // Settings
