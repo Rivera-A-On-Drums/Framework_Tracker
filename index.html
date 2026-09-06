@@ -346,10 +346,10 @@
 </head>
 <body>
 <div class="boot-overlay" id="boot-overlay">
-  <div class="boot-line" id="boot-line-0">TEMPO/ reads early, moves right</div>
-  <div class="boot-line" id="boot-line-1">BRIDGE/ connects what's disconnected</div>
-  <div class="boot-line" id="boot-line-2">ENABLE/ makes others faster</div>
-  <div class="boot-line" id="boot-line-3">COMPOSURE/ holds the signal, drops the noise</div>
+  <div class="boot-line" id="boot-line-0">DISCERN/ reads the field before the ball arrives</div>
+  <div class="boot-line" id="boot-line-1">TEMPO/ matches speed to the moment</div>
+  <div class="boot-line" id="boot-line-2">BRIDGE/ delivers the pass that lands</div>
+  <div class="boot-line" id="boot-line-3">ENABLE/ sets up the next player's play</div>
   <div class="boot-status" id="boot-status" hidden>// STEADY ONLINE</div>
   <div class="boot-tap" id="boot-tap">TAP TO INITIATE</div>
 </div>
@@ -358,7 +358,7 @@
   <div class="header">
     <div class="tag">// SYSTEM_LOG</div>
     <div class="date" id="date-label">LOADING...</div>
-    <div class="vision">Keep tempo. Bridge the gap. Enable the future. Hold the line: composure.</div>
+    <div class="vision">Discern the moment. Match the tempo. Bridge the gap. Enable the future.</div>
   </div>
 
   <div class="tabs">
@@ -392,10 +392,10 @@
     <div id="hist-list"></div>
     <div class="hist-detail" id="hist-detail">Select a day to view details</div>
     <div class="legend">
+      <span><span class="dot"></span> DISCERN</span>
       <span><span class="dot"></span> TEMPO</span>
-      <span><span class="dot"></span> THE BRIDGE</span>
-      <span><span class="dot"></span> ENABLEMENT</span>
-      <span><span class="dot"></span> COMPOSURE</span>
+      <span><span class="dot"></span> BRIDGE</span>
+      <span><span class="dot"></span> ENABLE</span>
     </div>
   </div>
 </div>
@@ -428,11 +428,14 @@
 
 <script>
 (function() {
+  // Order follows the daily flow: Discern -> Tempo -> Bridge -> Enable.
+  // Storage keys are unchanged from earlier versions (p/t/c/q) so existing
+  // history entries still line up correctly; only labels/order changed.
   const PRINCIPLES = [
-    { key: 't', title: 'Tempo/', sub: 'Did you help something move at the right speed?' },
-    { key: 'c', title: 'The Bridge/', sub: 'Did you translate something across a gap?' },
-    { key: 'q', title: 'Enablement/', sub: 'Did you do something today that helped someone else succeed?' },
-    { key: 'p', title: 'Composure/', sub: 'Did you stay steady while something shifted?' }
+    { key: 'p', title: 'Discern/', sub: 'Did you read the moment before reacting to it?' },
+    { key: 't', title: 'Tempo/', sub: 'Did you match speed to what the moment needed?' },
+    { key: 'c', title: 'Bridge/', sub: 'Did you translate something across a gap?' },
+    { key: 'q', title: 'Enable/', sub: 'Did you do something today that helped someone else succeed?' }
   ];
   const STORAGE_PREFIX = 'steady_entries_';
   let GIST_ID = localStorage.getItem('steady_gist_id') || '';
@@ -763,7 +766,7 @@
       weekText += 'No data yet.';
     } else {
       const sorted = Object.entries(principleCounts).sort((a,b) => b[1] - a[1]);
-      const names = { t: 'TEMPO', c: 'THE BRIDGE', q: 'ENABLEMENT', p: 'COMPOSURE' };
+      const names = { t: 'TEMPO', c: 'BRIDGE', q: 'ENABLE', p: 'DISCERN' };
       weekText += `<strong>${names[sorted[0][0]]}</strong> was strongest<br>`;
       weekText += `<strong>${names[sorted[sorted.length-1][0]]}</strong> needs attention`;
     }
